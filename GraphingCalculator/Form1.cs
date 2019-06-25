@@ -76,8 +76,18 @@ namespace GraphingCalculator
         {
             using (Function form = new Function())
             {
-                form.ShowDialog();
+                DialogResult result = form.ShowDialog();
+                
+                if (result == DialogResult.OK)
+                {
+                    string function = form.GetText();
+                }
             }
+        }
+
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

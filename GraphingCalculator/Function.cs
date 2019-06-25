@@ -26,5 +26,10 @@ namespace GraphingCalculator
         {
             this.Close();
         }
+        
+        public string GetText()
+        {
+            return this.textBoxEquation.Text;
+        }
     }
 }

@@ -25,34 +25,40 @@ namespace GraphingCalculator
 
         void ICoordinatePlane.DrawAxes(int increments, int tickHeight, Color axesColor)
         {
-            // draw from the origin to the positive side of the y-axis
-            _graphic.DrawLine(_pen, -_width, 0, _width, 0);
-
-            // draw the y-axis
-            _graphic.DrawLine(_pen, 0, -_height, 0, _height);
-
-            for (int index = increments; index < _height; index = index + increments)
+            lock (_graphic)
             {
-                _graphic.DrawLine(_pen, -tickHeight, index, tickHeight, index);
-            }
+                lock (_pen)
+                {
+                    // draw from the origin to the positive side of the y-axis
+                    _graphic.DrawLine(_pen, -_width, 0, _width, 0);
 
-            for (int index = -increments; index > -_height; index = index - increments)
-            {
-                _graphic.DrawLine(_pen, -tickHeight, index, tickHeight, index);
-            }
+                    // draw the y-axis
+                    _graphic.DrawLine(_pen, 0, -_height, 0, _height);
 
-            for (int index = increments; index < _width; index = index + increments)
-            {
-                _graphic.DrawLine(_pen, index, -tickHeight, index, tickHeight);
-            }
+                    for (int index = increments; index < _height; index = index + increments)
+                    {
+                        _graphic.DrawLine(_pen, -tickHeight, index, tickHeight, index);
+                    }
 
-            for (int index = -increments; index > -_width; index = index - increments)
-            {
-                _graphic.DrawLine(_pen, index, -tickHeight, index, tickHeight);
-            }
+                    for (int index = -increments; index > -_height; index = index - increments)
+                    {
+                        _graphic.DrawLine(_pen, -tickHeight, index, tickHeight, index);
+                    }
 
-            // draw the origin
-            _graphic.DrawEllipse(_pen, 0, 0, tickHeight, tickHeight);
+                    for (int index = increments; index < _width; index = index + increments)
+                    {
+                        _graphic.DrawLine(_pen, index, -tickHeight, index, tickHeight);
+                    }
+
+                    for (int index = -increments; index > -_width; index = index - increments)
+                    {
+                        _graphic.DrawLine(_pen, index, -tickHeight, index, tickHeight);
+                    }
+
+                    // draw the origin
+                    _graphic.DrawEllipse(_pen, 0, 0, tickHeight, tickHeight);
+                }
+            }
         }
 
         void ICoordinatePlane.DrawEllipse(int x, int y)
@@ -62,10 +68,18 @@ namespace GraphingCalculator
 
         void ICoordinatePlane.TranslateOrigin(float x, float y)
         {
-            _graphic.TranslateTransform(x, y);
+            lock (_graphic)
+            {
+                _graphic.TranslateTransform(x, y);
 
-            // for some reason, the origin is upside down to start with. Let's fix that.
-            _graphic.RotateTransform(180);
+                // for some reason, the origin is upside down to start with. Let's fix that.
+                _graphic.RotateTransform(180);
+            }
+        }
+
+        void ICoordinatePlane.DrawFunction(string function)
+        {
+
         }
     }
 }

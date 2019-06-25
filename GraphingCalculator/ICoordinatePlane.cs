@@ -12,5 +12,6 @@ namespace GraphingCalculator
         void TranslateOrigin(float x, float y);
         void DrawAxes(int increments, int tickHeight, Color axesColor);
         void DrawEllipse(int x, int y);
+        void DrawFunction(string function);
     }
 }
