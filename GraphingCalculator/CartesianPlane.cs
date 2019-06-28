@@ -9,9 +9,10 @@ namespace GraphingCalculator
 {
     public class CartesianPlane : ICoordinatePlane
     {
-        Graphics _graphic;
-        Pen _pen;
+        private Graphics _graphic;
+        private Pen _pen;
 
+        int _increments;
         int _height;
         int _width;
 
@@ -25,6 +26,8 @@ namespace GraphingCalculator
 
         void ICoordinatePlane.DrawAxes(int increments, int tickHeight, Color axesColor)
         {
+            _increments = increments;
+
             lock (_graphic)
             {
                 lock (_pen)
@@ -79,7 +82,11 @@ namespace GraphingCalculator
 
         void ICoordinatePlane.DrawFunction(string function)
         {
-
+            for (int i = 0; i < _increments; i++)
+            {
+                
+                string y = function.Replace("x", $"{i}");
+            }
         }
     }
 }

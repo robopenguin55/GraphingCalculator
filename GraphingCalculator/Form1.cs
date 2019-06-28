@@ -14,9 +14,13 @@ namespace GraphingCalculator
 {
     public partial class Form1 : Form
     {
-        Graphics _graphic;
-        System.Timers.Timer _timer;
+        // Someday this will be modifiable
         Pen _pen = new Pen(Color.Blue, 1f);
+
+        int _height = 0;
+        int _width = 0;
+
+        Bitmap drawArea;
 
         ICoordinatePlane _coordinatePlane;
 
@@ -25,51 +29,57 @@ namespace GraphingCalculator
             InitializeComponent();
         }
 
-        private void LabelQuadrants()
+        private void LabelQuadrants(Graphics graphic)
         {
             Color color = Color.FromArgb(255, 0, 0);
 
             FontFamily fontFamily = new FontFamily(System.Drawing.Text.GenericFontFamilies.Serif);
             Brush brush = new SolidBrush(color);
-            Font font = new Font(fontFamily, 2F);
+            Font font = new Font(fontFamily, 10F);
 
-            _graphic.DrawString("I", font, brush, (pictureBoxCalculator.Width * (1/2)), (pictureBoxCalculator.Height/4));
+            graphic.DrawString("I", font, brush, (pictureBoxCalculator.Width * (3/4)), (pictureBoxCalculator.Height/4));
         }
 
         private void RedrawPage(object sender, ElapsedEventArgs e)
         {
             DrawPage();
-
-            _timer.Enabled = false;
         }
 
         private void pictureBoxCalculator_SizeChanged(object sender, EventArgs e)
         {
-            _timer = new System.Timers.Timer(1000);
-            _timer.Elapsed += new ElapsedEventHandler(RedrawPage);
-            _timer.Enabled = true;
+            if (_height != pictureBoxCalculator.Size.Height || _width != pictureBoxCalculator.Size.Width)
+            {
+                _height = pictureBoxCalculator.Size.Height;
+                _width = pictureBoxCalculator.Size.Width;
+
+                DrawPage();
+            }
         }
 
         private void DrawPage()
         {
-            _graphic = pictureBoxCalculator.CreateGraphics();
+            // set up our bitmap to match the picturebox in size
+            this.drawArea = new Bitmap(pictureBoxCalculator.Size.Width, pictureBoxCalculator.Size.Height);
 
-            _coordinatePlane = new CartesianPlane(ref _graphic, ref _pen, pictureBoxCalculator.Height, pictureBoxCalculator.Width);
+            Graphics graphic = Graphics.FromImage(this.drawArea);
+            
+            _coordinatePlane = new CartesianPlane(ref graphic,ref _pen, pictureBoxCalculator.Height, pictureBoxCalculator.Width);
             _coordinatePlane.TranslateOrigin((float)pictureBoxCalculator.Width / 2, (float)pictureBoxCalculator.Height / 2);
             _coordinatePlane.DrawAxes(5, 2, Color.Black);
+            //LabelQuadrants(graphic);
+
+            pictureBoxCalculator.Image = drawArea;
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
             // load axes
-            _timer = new System.Timers.Timer(1000);
-            _timer.Elapsed += new ElapsedEventHandler(RedrawPage);
-            _timer.Enabled = true;
+            DrawPage();
         }
 
         private void Form1_Resize(object sender, EventArgs e)
         {
-            pictureBoxCalculator.Refresh();
+            //pictureBoxCalculator.Refresh();
         }
 
         private void insertFunctionToolStripMenuItem_Click(object sender, EventArgs e)
